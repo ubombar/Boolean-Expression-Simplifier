@@ -13,10 +13,12 @@ import java.util.List;
 class Expression
 {
     private final ExpressionNode root = new ExpressionNode(null, this, OperatorType.OUT);
-    protected boolean inputTable[];
-    public String parseText;
+    private ExpressionNode cursor;
+    private String parseText;
 
-    private enum OperatorType
+    protected boolean inputTable[];
+
+    public enum OperatorType
     {
         IN(1)
         {
@@ -28,9 +30,7 @@ class Expression
         },
 
         OUT(1)
-        {
-
-        },
+        {},
         AND(Integer.MAX_VALUE)
         {
             @Override
@@ -136,6 +136,7 @@ class Expression
 
         public void mutate(OperatorType type)
         {
+            assert this.childs.size() <= type.maxSupChilds : "Operator type '" + type + "' does not support number of childs: " + this.childs.size();
             this.type = type;
         }
     }   
@@ -144,16 +145,62 @@ class Expression
     {
         inputTable = new ExpressionNode[inputSize];
         this.parseText = parseString;
+        cursor = root;
     }
 
-    // TODO: Implement manipulation functions.
-    // Ex; addChild, addVariable, getChild, deleteChild, setInputTable, execute, findSubtree, simplify
+    // Data Matipulation Methods:
 
+    public ArrayList<ExpressionNode> getChilds()
+    {
+        return cursor.childs;
+    }
+
+    public boolean goChild(int index)
+    {
+        if (cursor.childs.size() <= index)
+            return false;
+
+        cursor = cursor.childs.get(index);
+        return true;
+    }
+
+    public boolean goParent()
+    {
+        if (cursor == root)
+            return false;
+
+        cursor = cursor.parent;
+        return true;
+    }
+
+    public boolean insertParent(OperatorType type)
+    {
+        // TODO: Implement this, remember that tree is double linked tree
+
+        return false;
+    }
+
+    public boolean deleteChild(int index)
+    {
+        // implement later
+        return false;
+    }
 
     public Expression simplify()
     {
         // Must do the trick!
         return this;
+    }
+
+    public void setInputTable(boolean[] table)
+    {
+        assert table.length == inputTable.length : "The variable count is not matched";
+        inputTable = table;
+    }
+
+    public boolean execute()
+    {
+        return root.execute();
     }
 
 }
