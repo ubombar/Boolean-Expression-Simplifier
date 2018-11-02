@@ -1,3 +1,5 @@
+import ExpressionTree.Node;
+import ExpressionTree.Operator;
 
 /**
  * Main class
@@ -11,12 +13,10 @@ class Main
 {
     public static void main(String[] args)
     {
-        System.out.println("Hello World!");
+        boolean[] table = new boolean[] {true, true};
+        ExpressionTree tree = new ExpressionTree(2);
 
-        // Usage:
-
-        String expression = "not (not A and not B)";
-        Expression e = BEParser.parse(expression).simplify();
-
+        System.out.println("Expression: Y = A and B");
+        System.out.println("(A, B) = (1, 1), Y = " + tree.execute(table));
     }
 }
