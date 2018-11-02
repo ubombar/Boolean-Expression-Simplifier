@@ -38,13 +38,16 @@ class ExpressionTree
         // Build node here!
         // TODO:
 
-        Node A = new Node(Operator.INPUT).setInputIndex(0);
+        Node A = new Node(Operator.INPUT).setInputIndex(2);
         Node B = new Node(Operator.INPUT).setInputIndex(1);
+        Node C = new Node(Operator.INPUT).setInputIndex(0);
         Node AND = new Node(Operator.AND);
+        Node OR = new Node(Operator.OR);
+        Node NOT = new Node(Operator.NOT);
 
-        AND.add(A).add(B);
         
-        ROOT.add(AND);
+        
+        ROOT.add(AND.add(A).add(OR.add(B).add(NOT.add(C))));
     }
 
     private class Node
@@ -159,12 +162,33 @@ class ExpressionTree
         OUTPUT()
         {
             /**
-             * Executes all the child nodes to get the value.
+             * Executes the child node to get the value.
              */
             @Override
             boolean execute(boolean[] inputs, Node curNode)
             {
                 return curNode.childs.get(0).execute(inputs);
+            }
+
+            @Override
+            boolean isChildCountOkay(int count) 
+            {
+                return count == 1;
+            }
+        },
+        /**
+         * NOT takes the complement of the value.
+         */
+        NOT()
+        {
+            /**
+             * Executes the child node to get the value.
+             */
+            @Override
+            boolean execute(boolean[] inputs, Node curNode)
+            {
+                
+                return !curNode.childs.get(0).execute(inputs);
             }
 
             @Override
@@ -188,6 +212,29 @@ class ExpressionTree
                     if (!child.execute(inputs))
                         return false;
                 return true;
+            }
+
+            @Override
+            boolean isChildCountOkay(int count) 
+            {
+                return count > 1;
+            }
+        },
+        /**
+         * OR operator, cannot have less than 2 childs.
+         */
+        OR()
+        {
+            /**
+             * For the result to be true, all the values of childs should be true.
+             */
+            @Override
+            boolean execute(boolean[] inputs, Node curNode)
+            {
+                for (Node child : curNode.childs)
+                    if (child.execute(inputs))
+                        return true;
+                return false;
             }
 
             @Override
