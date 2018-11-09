@@ -14,7 +14,7 @@ class Main
     public static void main(String[] args)
     {
         boolean[] table = new boolean[] {true, true, true};
-        ExpressionTree tree = new ExpressionTree(3);
+        ExpressionTree tree = new ExpressionTree(3, "hellooo");
 
         System.out.println("Expression: Y = A and (B or not C) and W is the compiler version");
         System.out.println();
@@ -27,5 +27,7 @@ class Main
 
             System.out.println((tab[2]?1:0) + "  " + (tab[1]?1:0) + "  " + (tab[0]?1:0) + "  |  " + (tree.execute(tab)?1:0) + "  " + (bb?1:0));
         }
+
+        System.out.println("Cost: " + tree.cost());
     }
 }

@@ -8,6 +8,8 @@ import java.util.ArrayList;
  */
 class ExpressionTree
 {
+    // Cost of nodes in order of {'AND', 'OR', 'NOT', 'TRUE', 'FALSE'}
+    private static final int[] COST = {1, 1, 1, 1, 1};
     private final Node ROOT = new Node(Operator.OUTPUT)
     {
         /**
@@ -30,8 +32,9 @@ class ExpressionTree
      * Default expression is Y = 0
      * 
      * @param numberOfVariables
+     * @param parse
      */
-    public ExpressionTree(int numberOfVariables)
+    public ExpressionTree(int numberOfVariables, String parse)
     {
         this.numberOfVariables = numberOfVariables;
 
@@ -112,6 +115,30 @@ class ExpressionTree
             node.parent = this;
             childs.add(node);
             return this;
+        }
+
+        /**
+         * Calculates the cost of each child note and itself.
+         */
+        public int cost(int[] cost)
+        {
+            int costs = 0;
+
+            if (operator == ExpressionTree.Operator.AND)
+                costs += cost[0];
+            else if (operator == ExpressionTree.Operator.OR)
+                costs += cost[1];
+            else if (operator == ExpressionTree.Operator.NOT)
+                costs += cost[2];
+            else if (operator == ExpressionTree.Operator.TRUE)
+                costs += cost[3];
+            else if (operator == ExpressionTree.Operator.FALSE)
+                costs += cost[4];
+
+            for (Node child : childs)
+                costs += child.cost(cost);
+
+            return costs;
         }
 
         /**
@@ -311,6 +338,26 @@ class ExpressionTree
         assert inputTable.length == this.numberOfVariables : "There more/less variables than it specified before.";
 
         return ROOT.execute(inputTable);            
+    }
+
+    /**
+     * Finds the cost of the tree. Costs can be specified by the int array argument.
+     * @param cost
+     * @return total cost
+     */
+    public int cost(int[] cost)
+    {
+        return ROOT.cost(cost);
+    }
+
+    /**
+     * Default version of {@link cost(int[] cost)} function, all default costs per operators are initalized.
+     * AND, OR, NOT, TRUE, FALSE = 1, 1, 1, 1, 1
+     * @return total cost od the tree
+     */
+    public int cost()
+    {
+        return ROOT.cost(COST);
     }
     
 }
