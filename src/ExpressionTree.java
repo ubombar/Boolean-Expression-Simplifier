@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * ExpressionTree class
@@ -51,6 +52,122 @@ class ExpressionTree
         
         
         ROOT.add(AND.add(A).add(OR.add(B).add(NOT.add(C))));
+    }
+
+
+
+
+    /**
+     * Parses the expression in a recursive way.
+     * @param str
+     * @param node
+     * @param pd
+     */
+    public Node parse(StringBuilder sb, Node parent, ParserData pd)
+    {
+        Node tmp = new Node(null, null);
+
+        // Test for basic base cases
+        if (sb == null || node == null || pd == null)
+            throw Exception("Could not parse!");
+        
+        String tmpStr = sb.toString();
+        if (tmpStr.startsWith(pd.LEFTP) && tmpStr.endsWith(pd.RIGHTP)) // Base case 1: Evaluate paranthesis first.
+        {
+            // In that case we first evaluate inside pharenthesis.
+            int leftIndex = 0, rightIndex = 0;
+
+            for (int i = 0; i < sb.length(); i++)
+                if (sb.charAt(i) == pd.LEFTP)
+                {
+                    leftIndex = i;
+                    break;
+                }
+            
+            for (int i = sb.length() - 1; i >= 0; i--)
+                if (sb.charAt(i) == pd.RIGHTP)
+                {
+                    rightIndex = i;
+                    break;
+                }
+
+            
+            tmp.add(parse(new StringBuilder(tmpStr.substring(leftIndex, rightIndex)), parent, pd));
+        }
+        
+
+        return tmp;
+    }
+    /* There are problems!!!
+    private void parse(String str, Node current, ParserData pd)
+    {
+        // First checks base points
+        if (str == null || str.length() == 0)
+            return;
+
+        if (str.length() % 2 == 0) // We want us, string to have odd length
+            str.concat(" ");
+
+        // Half point of the string
+        int half = 1 + (str.length() / 2);
+        
+        // Length - 1 of the string
+        int full = half * 2 - 2;
+        
+
+        // Pharenthesis count of left side
+        int lP = 0;
+
+        // Pharenthesis count of right side
+        int rP = 0;
+
+        for (int i = 0; i <= half; i++)
+        {
+            // l := left index
+            int l = i;
+
+            // r := right index
+            int r = full - i;
+
+            // cl := char at left index
+            char cl = str.charAt(i);
+
+            // cr := char at right index
+            char cr = str.charAt(r);
+
+            if (cl == pd.LEFTP)
+                lP++;
+            else if (cl == pd.RIGHTP)
+                lP--;
+
+            if (cr == pd.LEFTP)
+                rP--;
+            else if (cr == pd.RIGHTP)
+                rP++;
+            
+            if (lP < 0 || rP < 0) // Then there is a mistake on string. Maybe throw an error??
+                return;
+            
+            
+
+        }
+
+    }
+    */
+
+
+    /**
+     * Responsible for encapsulating parsing data.
+     */
+    private class ParserData
+    {
+        public final String AND = "&";
+        public final String OR = "|";
+        public final String NOT = "~";
+        public final String LEFTP = "(";
+        public final String RIGHTP = ")";
+
+        public HashMap<String, Integer> inputs = new HashMap();
     }
 
     private class Node
